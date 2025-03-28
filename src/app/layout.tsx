@@ -3,7 +3,7 @@ import "@/styles/globals.css"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "ReflexIP",
+  title: "ByteZero GEO",
   description: "A GEOIP service comparison utility."
 }
 
