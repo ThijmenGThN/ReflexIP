@@ -1,6 +1,14 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ReflexIP
+
+ReflexIP is a GEOIP service comparison utility built with [Next.js](https://nextjs.org).
+
+![ReflexIP Banner](./src/assets/preview.png)
 
 ## Getting Started
+
+You can run ReflexIP using one of the following methods:
+
+### Standard Next.js Setup
 
 First, run the development server:
 
@@ -18,7 +26,15 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Using Docker Compose
+
+To start the application with Docker Compose, simply run:
+
+```bash
+docker-compose up -d
+```
+
+This will build and start the application in detached mode. Once running, open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Learn More
 

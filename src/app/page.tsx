@@ -26,7 +26,7 @@ interface ResultItem {
   lng: number
 }
 
-import LogoRect from "@/assets/rectangle.svg"
+import LogoRect from "@/assets/tp-white.png"
 
 export default function Home() {
   const mapContainer = useRef<HTMLDivElement>(null)
@@ -41,7 +41,7 @@ export default function Home() {
     const m = new maplibregl.Map({
       container: mapContainer.current as HTMLElement,
       style:
-        "https://api.maptiler.com/maps/0195d9ce-f3be-74f2-9f4e-0c55be14716f/style.json?key=gB6P57S1Ofik49XFcLSa",
+        "https://api.maptiler.com/maps/dataviz-dark/style.json?key=gB6P57S1Ofik49XFcLSa",
       center: [0, 45],
       zoom: 3,
       attributionControl: false
@@ -64,15 +64,15 @@ export default function Home() {
     })
     setMap(m)
 
-    ;(async () => {
-      try {
-        const res = await fetch("https://api.ipify.org?format=json")
-        const data = await res.json()
-        setIp(data.ip)
-      } catch {
-        setError("Could not detect your IP address")
-      }
-    })()
+      ; (async () => {
+        try {
+          const res = await fetch("https://api.ipify.org?format=json")
+          const data = await res.json()
+          setIp(data.ip)
+        } catch {
+          setError("Could not detect your IP address")
+        }
+      })()
     return () => m.remove()
   }, [])
 
@@ -174,9 +174,9 @@ export default function Home() {
               .setLngLat([+lng, +lat])
               .setPopup(
                 new maplibregl.Popup({ offset: 25, className: "custom-popup" }).setHTML(`
-                    <div class="text-slate-800">
-                      <div class="font-medium text-primary-600">${api}</div>
-                      <div class="text-xs text-slate-500 mt-1">Response: ${(tEnd - tStart).toFixed(0)}ms</div>
+                    <div class="text-white">
+                      <div class="font-medium text-primary-500">${api}</div>
+                      <div class="text-xs text-gray-400 mt-1">Response: ${(tEnd - tStart).toFixed(0)}ms</div>
                     </div>
                   `)
               )
@@ -205,49 +205,68 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col md:flex-row w-screen h-screen bg-white text-slate-800 overflow-hidden font-sans">
+    <div className="flex flex-col md:flex-row w-screen h-screen bg-black text-white overflow-hidden font-sans">
       <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-primary-500 blur-[140px]" />
-          <div className="absolute bottom-0 left-0 w-1/4 h-1/4 bg-indigo-500 blur-[120px]" />
+        <div className="absolute inset-0 opacity-[0.07]">
+          <svg width="100%" height="100%">
+            <filter id="noise">
+              <feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="3" stitchTiles="stitch" />
+              <feColorMatrix type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.5 0" />
+            </filter>
+            <rect width="100%" height="100%" filter="url(#noise)" />
+          </svg>
         </div>
         <div className="absolute inset-0">
           <div
             className="h-full w-full"
             style={{
               backgroundImage:
-                "radial-gradient(circle, rgba(100,116,139,0.03) 1px, transparent 1px)",
+                "radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px)",
               backgroundSize: "30px 30px"
             }}
           />
         </div>
+        <div
+          className="absolute top-0 right-0 w-[40%] h-[30%] opacity-5"
+          style={{
+            background: 'radial-gradient(circle at top right, rgba(20, 184, 166, 0.4), transparent 70%)',
+            filter: 'blur(60px)'
+          }}
+        />
+        <div
+          className="absolute bottom-0 left-0 w-[30%] h-[20%] opacity-3"
+          style={{
+            background: 'radial-gradient(circle at bottom left, rgba(20, 184, 166, 0.4), transparent 70%)',
+            filter: 'blur(50px)'
+          }}
+        />
         <motion.div
-          className="absolute left-0 right-0 h-[60px] bg-gradient-to-b from-transparent via-primary-500/3 to-transparent pointer-events-none"
+          className="absolute left-0 right-0 h-[40px] bg-gradient-to-b from-transparent via-primary-500/3 to-transparent pointer-events-none"
           initial={{ top: "-10%" }}
           animate={{ top: "110%" }}
           transition={{
-            duration: 12,
+            duration: 10,
             repeat: Infinity,
             ease: "linear"
           }}
         />
       </div>
+
       <motion.div
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
         className="w-full md:w-1/2 h-[50vh] md:h-full relative z-10"
       >
-        <div className="absolute inset-4 md:inset-6 rounded-3xl overflow-hidden shadow-xl">
-          <div className="absolute inset-0 bg-gradient-to-tr from-slate-50 to-white/5 z-10 pointer-events-none opacity-[0.02]" />
-          <div className="absolute inset-0 border border-slate-200/30 rounded-3xl z-20 pointer-events-none" />
-          <div className="absolute z-50 top-5 left-5 bg-white/90 backdrop-blur-sm px-2 py-1.5 border border-slate-200/30 rounded-xl pointer-events-none">
-            <Image src={LogoRect} alt="Logo" className="h-24 w-auto -my-6 mx-auto rounded-full" />
+        <div className="absolute inset-4 md:inset-6 rounded-xl overflow-hidden shadow-xl bg-black/30 backdrop-blur-md border border-white/5">
+          <div className="absolute inset-0 bg-gradient-to-tr from-black to-black/60 z-10 pointer-events-none opacity-30" />
+          <div className="absolute z-50 top-5 left-5 bg-black/70 backdrop-blur-sm px-2 py-1.5 border border-white/10 rounded-xl pointer-events-none shadow-lg">
+            <Image src={LogoRect} alt="Logo" className="h-12 w-auto rounded-full" />
           </div>
           <div ref={mapContainer} className="w-full h-full relative z-0" />
-          <div className="absolute top-0 left-0 w-full h-12 bg-gradient-to-b from-white/40 to-transparent z-20 pointer-events-none backdrop-blur-[2px]" />
+          <div className="absolute top-0 left-0 w-full h-12 bg-gradient-to-b from-black/40 to-transparent z-20 pointer-events-none backdrop-blur-[2px]" />
           <motion.div
-            className="absolute bottom-5 left-5 flex items-center gap-2 text-xs font-medium text-slate-700 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-sm z-20 border border-slate-100"
+            className="absolute bottom-5 left-5 flex items-center gap-2 text-xs font-medium text-gray-300 bg-black/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-sm z-20 border border-white/5"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1 }}
@@ -265,13 +284,14 @@ export default function Home() {
           </motion.div>
         </div>
       </motion.div>
+
       <motion.div
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
         className="w-full md:w-1/2 p-4 md:p-6 overflow-hidden flex flex-col z-10"
       >
-        <div className="bg-white/80 backdrop-blur-md rounded-3xl p-6 shadow-xl h-full overflow-hidden flex flex-col border border-slate-100">
+        <div className="bg-black/30 backdrop-blur-md rounded-xl p-6 shadow-xl h-full overflow-hidden flex flex-col border border-white/5">
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -279,19 +299,20 @@ export default function Home() {
             className="mb-6"
           >
             <div className="flex">
-              <div className="flex mt-1.5 mr-5 items-center justify-center h-10 w-10 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 text-white shadow-lg shadow-primary-500/20">
+              <div className="flex mt-1.5 mr-5 items-center justify-center h-10 w-10 rounded-xl bg-primary-500/10 border border-primary-500/20 text-primary-500">
                 <GlobeAltIcon className="h-5 w-5" />
               </div>
               <div>
-                <h1 className="text-xl font-bold flex items-center text-slate-800">
+                <h1 className="text-xl font-bold flex items-center text-white">
                   IP Geolocation Tracker
                 </h1>
-                <p className="text-slate-500 text-sm">
+                <p className="text-gray-400 text-sm">
                   Find precise geographic locations for any IP address
                 </p>
               </div>
             </div>
           </motion.div>
+
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -300,32 +321,32 @@ export default function Home() {
           >
             <div className="flex gap-2 items-center">
               <div className="relative flex-1">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary-500 transition-colors duration-200">
                   <MapPinIcon className="w-5 h-5" />
                 </div>
                 <input
-                  className="w-full pl-12 pr-4 h-12 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-500/10 text-slate-800 placeholder-slate-400 transition-all shadow-sm"
+                  className="w-full pl-10 pr-4 py-3 bg-black/60 border border-white/10 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 text-white placeholder-gray-500 transition-all"
                   value={ip}
                   onChange={(e) => setIp(e.target.value)}
                   placeholder="Enter IP Address"
                 />
               </div>
               <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
                 disabled={loading}
                 onClick={handleFindLocation}
-                className="relative overflow-hidden h-12 px-5 bg-primary-500 text-white font-medium rounded-xl disabled:opacity-70 group shadow-lg shadow-primary-500/20"
+                className="relative overflow-hidden py-3 px-5 bg-primary-500 text-white font-medium rounded-lg disabled:opacity-70 group shadow-lg shadow-primary-500/20"
               >
-                <span className="relative z-10 flex items-center">
+                <span className="relative z-10 flex items-center gap-2">
                   {loading ? (
                     <>
-                      <ArrowPathIcon className="animate-spin mr-2 h-4 w-4" />
+                      <ArrowPathIcon className="animate-spin h-4 w-4" />
                       Searching...
                     </>
                   ) : (
                     <>
-                      <MagnifyingGlassIcon className="h-4 w-4 mr-2" />
+                      <MagnifyingGlassIcon className="h-4 w-4" />
                       Locate
                     </>
                   )}
@@ -338,31 +359,33 @@ export default function Home() {
                 />
               </motion.button>
             </div>
+
             {error && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
-                className="mt-3 p-3 bg-red-50 border border-red-100 rounded-xl"
+                transition={{ duration: 0.3 }}
+                className="mt-5 p-3 bg-red-500/10 border border-red-500/20 rounded-lg"
               >
-                <p className="text-center text-sm text-red-500 font-medium">{error}</p>
+                <p className="text-center text-sm text-red-500">{error}</p>
               </motion.div>
             )}
           </motion.div>
-          <div className="flex-1 overflow-auto scrollbar-thin scrollbar-thumb-primary-500/10 scrollbar-track-slate-100 pr-2">
+
+          <div className="flex-1 overflow-auto scrollbar-thin pr-2">
             {!results.length && !loading && !error ? (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="h-full flex flex-col items-center justify-center text-slate-500 p-8"
+                className="h-full flex flex-col items-center justify-center text-gray-400 p-8"
               >
                 <div className="relative w-20 h-20 mb-6">
-                  <div className="absolute inset-0 rounded-full bg-slate-50 animate-pulse"></div>
-                  <div className="absolute inset-2 rounded-full bg-gradient-to-br from-primary-50/20 to-primary-100/80 border border-primary-200/50"></div>
+                  <div className="absolute inset-2 rounded-full bg-primary-500/10 border border-primary-500/20"></div>
                   <div className="absolute inset-0 flex items-center justify-center">
                     <GlobeAltIcon className="h-10 w-10 text-primary-500" />
                   </div>
                 </div>
-                <p className="text-center text-sm max-w-xs font-medium">
+                <p className="text-center text-sm max-w-xs">
                   Enter an IP address and click "Locate" to find its geographic location
                 </p>
               </motion.div>
@@ -380,55 +403,54 @@ export default function Home() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.4, delay: i * 0.1 }}
-                        className="bg-white rounded-2xl border border-slate-200/70 overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                        className="bg-black/60 backdrop-blur-md rounded-lg border border-white/5 overflow-hidden"
                       >
                         <div
                           onClick={() => toggleCard(i, r.lat, r.lng)}
-                          className="relative cursor-pointer transition-all duration-300 hover:bg-slate-50"
+                          className="relative cursor-pointer transition-all duration-300 hover:bg-white/5"
                         >
                           {/* Colored edge indicator */}
                           <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
                             <div
-                              className={`absolute top-0 left-0 w-[3px] h-full bg-gradient-to-b from-primary-400 to-primary-600 transition-all duration-300 ${
-                                isExpanded ? "opacity-100" : "opacity-0"
-                              }`}
+                              className={`absolute top-0 left-0 w-[3px] h-full bg-gradient-to-b from-primary-400 to-primary-600 transition-all duration-300 ${isExpanded ? "opacity-100" : "opacity-0"
+                                }`}
                             ></div>
                           </div>
 
                           <div className="flex items-center p-4">
-                            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center mr-4 border border-slate-200/50 shadow-sm">
+                            <div className="h-12 w-12 rounded-xl bg-primary-500/10 flex items-center justify-center mr-4 border border-primary-500/20">
                               <ServerIcon className="h-6 w-6 text-primary-500" />
                             </div>
 
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center flex-wrap gap-2">
-                                <h3 className="font-semibold text-slate-800 text-base">
+                                <h3 className="font-semibold text-white text-base">
                                   {r.api}
                                 </h3>
-                                <div className="flex items-center px-2.5 py-1 bg-primary-50 text-primary-600 text-xs rounded-full font-medium">
+                                <div className="flex items-center px-2.5 py-1 bg-primary-500/10 text-primary-500 text-xs rounded-full font-medium border border-primary-500/20">
                                   <ClockIcon className="w-3 h-3 mr-1" />
                                   {r.time}ms
                                 </div>
                               </div>
 
-                              <div className="text-sm text-slate-600 mt-1 truncate">
+                              <div className="text-sm text-gray-300 mt-1 truncate">
                                 {city && country ? (
                                   <div className="flex items-center">
-                                    <MapPinIcon className="w-3.5 h-3.5 mr-1 flex-shrink-0 text-slate-400" />
+                                    <MapPinIcon className="w-3.5 h-3.5 mr-1 flex-shrink-0 text-gray-400" />
                                     <span className="truncate">
                                       {[city, region, country].filter(Boolean).join(", ")}
                                     </span>
                                   </div>
                                 ) : (
-                                  <div className="text-slate-400 text-xs">
+                                  <div className="text-gray-500 text-xs">
                                     Location data available
                                   </div>
                                 )}
                               </div>
 
                               {isp && (
-                                <div className="text-xs text-slate-500 mt-1 truncate">
-                                  <span className="text-slate-400">ISP:</span> {isp}
+                                <div className="text-xs text-gray-400 mt-1 truncate">
+                                  <span className="text-gray-500">ISP:</span> {isp}
                                 </div>
                               )}
                             </div>
@@ -441,7 +463,7 @@ export default function Home() {
                                   e.stopPropagation()
                                   goToLocation(r.lat, r.lng)
                                 }}
-                                className="mr-3 flex items-center justify-center w-9 h-9 rounded-lg bg-slate-50 hover:bg-primary-50 border border-slate-200 hover:border-primary-200 transition-colors shadow-sm"
+                                className="mr-3 flex items-center justify-center w-9 h-9 rounded-lg bg-black/40 hover:bg-primary-500/10 border border-white/10 hover:border-primary-500/20 transition-colors"
                                 title="Center on map"
                               >
                                 <MapPinIcon className="h-4 w-4 text-primary-500" />
@@ -450,7 +472,7 @@ export default function Home() {
                               <motion.div
                                 animate={{ rotate: isExpanded ? 90 : 0 }}
                                 transition={{ duration: 0.3 }}
-                                className="w-6 h-6 flex items-center justify-center text-slate-400"
+                                className="w-6 h-6 flex items-center justify-center text-gray-400"
                               >
                                 <ChevronRightIcon className="h-5 w-5" />
                               </motion.div>
@@ -469,9 +491,9 @@ export default function Home() {
                               className="overflow-hidden"
                             >
                               <div className="p-4 pt-0">
-                                <div className="h-px w-full bg-slate-100 mb-4" />
+                                <div className="h-px w-full bg-white/5 mb-4" />
 
-                                <div className="p-4 bg-slate-50 overflow-x-auto border border-slate-200/70 rounded-lg">
+                                <div className="p-4 bg-black/60 overflow-x-auto border border-white/10 rounded-lg">
                                   <JSONPretty id="json-pretty" data={r.data}></JSONPretty>
                                 </div>
                               </div>
@@ -485,68 +507,90 @@ export default function Home() {
               </div>
             )}
           </div>
+
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
-            className="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs text-slate-500"
+            className="mt-4 pt-3 border-t border-white/5 flex justify-between items-center text-xs text-gray-500"
           >
             <div className="font-medium">IP Geolocation Tracker</div>
           </motion.div>
         </div>
       </motion.div>
+
       <style jsx global>{`
         .maplibregl-popup {
           z-index: 1;
         }
         .maplibregl-popup-content {
-          background: rgba(255, 255, 255, 0.97);
+          background: rgba(0, 0, 0, 0.8);
           backdrop-filter: blur(8px);
-          border: 1px solid rgba(229, 231, 235, 0.5);
-          border-radius: 16px;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 12px;
           padding: 12px 14px;
-          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+          color: white;
         }
         .maplibregl-popup-tip {
-          border-top-color: rgba(255, 255, 255, 0.97) !important;
-          border-bottom-color: rgba(255, 255, 255, 0.97) !important;
+          border-top-color: rgba(0, 0, 0, 0.8) !important;
+          border-bottom-color: rgba(0, 0, 0, 0.8) !important;
         }
         .maplibregl-popup-close-button {
-          color: rgba(107, 114, 128, 0.7);
+          color: rgba(255, 255, 255, 0.6);
           font-size: 20px;
           padding: 0 6px;
         }
         .maplibregl-popup-close-button:hover {
-          color: rgba(107, 114, 128, 1);
+          color: rgba(255, 255, 255, 0.9);
           background: transparent;
         }
         .maplibregl-ctrl-group {
-          background: rgba(255, 255, 255, 0.95);
+          background: rgba(0, 0, 0, 0.7);
           backdrop-filter: blur(8px);
           border-radius: 12px !important;
-          border: 1px solid rgba(229, 231, 235, 0.5) !important;
+          border: 1px solid rgba(255, 255, 255, 0.1) !important;
           overflow: hidden;
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
         .maplibregl-ctrl button {
           background-color: transparent !important;
         }
         .maplibregl-ctrl button:hover {
-          background-color: rgba(209, 213, 219, 0.2) !important;
+          background-color: rgba(255, 255, 255, 0.1) !important;
         }
         .scrollbar-thin::-webkit-scrollbar {
           width: 4px;
         }
         .scrollbar-thin::-webkit-scrollbar-track {
-          background: rgba(241, 245, 249, 0.5);
+          background: rgba(0, 0, 0, 0.2);
           border-radius: 8px;
         }
         .scrollbar-thin::-webkit-scrollbar-thumb {
-          background: rgba(20, 184, 166, 0.1);
+          background: rgba(20, 184, 166, 0.2);
           border-radius: 8px;
         }
         .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-          background: rgba(20, 184, 166, 0.2);
+          background: rgba(20, 184, 166, 0.3);
+        }
+        .react-json-pretty {
+          background: transparent !important;
+          color: rgba(255, 255, 255, 0.8) !important;
+        }
+        .react-json-pretty .json-key {
+          color: #14b8a6 !important;
+        }
+        .react-json-pretty .json-value {
+          color: rgba(255, 255, 255, 0.7) !important;
+        }
+        .react-json-pretty .json-string {
+          color: #e879f9 !important;
+        }
+        .react-json-pretty .json-boolean {
+          color: #60a5fa !important;
+        }
+        .react-json-pretty .json-number {
+          color: #f97316 !important;
         }
       `}</style>
     </div>
