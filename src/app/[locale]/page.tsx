@@ -4,16 +4,15 @@ import { useState, useEffect, useRef } from "react"
 import maplibregl from "maplibre-gl"
 import "maplibre-gl/dist/maplibre-gl.css"
 import axios from "axios"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import {
     MapPinIcon,
     GlobeAltIcon,
-    ArrowTopRightOnSquareIcon,
     MagnifyingGlassIcon,
     ChevronRightIcon,
     ClockIcon,
-    LinkIcon,
-    ServerIcon
+    ServerIcon,
+    ArrowPathIcon
 } from "@heroicons/react/24/outline"
 
 interface ResultItem {
@@ -36,9 +35,10 @@ export default function Home() {
     useEffect(() => {
         const m = new maplibregl.Map({
             container: mapContainer.current as HTMLElement,
-            style: "https://api.maptiler.com/maps/basic-v2/style.json?key=gB6P57S1Ofik49XFcLSa",
+            style: "https://api.maptiler.com/maps/0195d9ce-f3be-74f2-9f4e-0c55be14716f/style.json?key=gB6P57S1Ofik49XFcLSa",
             center: [0, 45],
-            zoom: 3
+            zoom: 3,
+            attributionControl: false
         })
         const navControl = new maplibregl.NavigationControl({
             showCompass: true,
@@ -49,7 +49,7 @@ export default function Home() {
             const controls = document.querySelector(".maplibregl-control-container")
             if (controls) {
                 controls.classList.add(
-                    "opacity-70",
+                    "opacity-80",
                     "hover:opacity-100",
                     "transition-opacity",
                     "duration-300"
@@ -85,6 +85,13 @@ export default function Home() {
         const country = data.country || data.location?.country || data.data?.location?.country || ""
         const region = data.region || data.location?.region || data.data?.location?.region || ""
         return { city, country, region }
+    }
+
+    function getISP(data: any) {
+        if (typeof data.isp === "object" && data.isp !== null) {
+            return data.isp.isp || data.isp.org || ""
+        }
+        return data.isp || data.org || data.as_org || data.organization || data.location?.org || ""
     }
 
     async function handleFindLocation() {
@@ -136,8 +143,8 @@ export default function Home() {
                         el.innerHTML = `
               <div class="flex flex-col items-center">
                 <div class="w-3 h-3 bg-primary-500 rounded-full animate-pulse"></div>
-                <div class="w-0.5 h-6 bg-primary-500/50 -mt-1"></div>
-                <div class="w-4 h-4 rounded-full bg-primary-500 flex items-center justify-center ring-4 ring-primary-500/20 animate-ping absolute opacity-75"></div>
+                <div class="w-0.5 h-6 bg-primary-500/70 -mt-1"></div>
+                <div class="w-4 h-4 rounded-full bg-primary-500 flex items-center justify-center ring-4 ring-primary-500/30 animate-ping absolute opacity-75"></div>
                 <div class="w-3 h-3 rounded-full bg-primary-500 absolute"></div>
               </div>
             `
@@ -146,9 +153,9 @@ export default function Home() {
                             .setPopup(
                                 new maplibregl.Popup({ offset: 25, className: "custom-popup" })
                                     .setHTML(`
-                    <div class="text-white">
-                      <div class="font-bold text-primary-500">${api}</div>
-                      <div class="text-sm opacity-70">Response: ${(
+                    <div class="text-slate-800">
+                      <div class="font-medium text-primary-600">${api}</div>
+                      <div class="text-xs text-slate-500 mt-1">Response: ${(
                                             tEnd - tStart
                                         ).toFixed(0)}ms</div>
                     </div>
@@ -179,28 +186,28 @@ export default function Home() {
     }
 
     return (
-        <div className="flex flex-col md:flex-row w-screen h-screen bg-black text-white overflow-hidden">
-            <div className="fixed inset-0 pointer-events-none">
-                <div className="absolute inset-0 opacity-10">
-                    <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-primary-500/20 blur-[100px]" />
-                    <div className="absolute bottom-0 left-0 w-1/4 h-1/4 bg-primary-500/10 blur-[100px]" />
+        <div className="flex flex-col md:flex-row w-screen h-screen bg-white text-slate-800 overflow-hidden font-sans">
+            <div className="fixed inset-0 pointer-events-none z-0">
+                <div className="absolute inset-0 opacity-5">
+                    <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-primary-500 blur-[140px]" />
+                    <div className="absolute bottom-0 left-0 w-1/4 h-1/4 bg-indigo-500 blur-[120px]" />
                 </div>
-                <div className="absolute inset-0 opacity-10">
+                <div className="absolute inset-0">
                     <div
                         className="h-full w-full"
                         style={{
                             backgroundImage:
-                                "radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px)",
+                                "radial-gradient(circle, rgba(100,116,139,0.03) 1px, transparent 1px)",
                             backgroundSize: "30px 30px"
                         }}
                     />
                 </div>
                 <motion.div
-                    className="absolute left-0 right-0 h-[40px] bg-gradient-to-b from-transparent via-primary-500/5 to-transparent pointer-events-none"
+                    className="absolute left-0 right-0 h-[60px] bg-gradient-to-b from-transparent via-primary-500/3 to-transparent pointer-events-none"
                     initial={{ top: "-10%" }}
                     animate={{ top: "110%" }}
                     transition={{
-                        duration: 10,
+                        duration: 12,
                         repeat: Infinity,
                         ease: "linear"
                     }}
@@ -210,31 +217,28 @@ export default function Home() {
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
-                className="w-full md:w-1/2 h-[50vh] md:h-full relative"
+                className="w-full md:w-1/2 h-[50vh] md:h-full relative z-10"
             >
-                <div className="absolute inset-2 md:inset-4 bg-black/30 backdrop-blur-sm rounded-xl overflow-hidden border border-white/5 shadow-xl">
-                    <div ref={mapContainer} className="w-full h-full" />
-                    <div className="absolute top-3 left-3 flex items-center opacity-50">
-                        <div className="h-4 w-4 border border-primary-500/50 flex items-center justify-center rounded-sm">
-                            <div className="h-1.5 w-1.5 bg-primary-500/70" />
-                        </div>
-                        <div className="ml-2 h-px w-12 bg-gradient-to-r from-primary-500/70 to-transparent" />
-                    </div>
+                <div className="absolute inset-4 md:inset-6 rounded-3xl overflow-hidden shadow-xl">
+                    <div className="absolute inset-0 bg-gradient-to-tr from-slate-50 to-white/5 z-10 pointer-events-none opacity-[0.02]" />
+                    <div className="absolute inset-0 border border-slate-200/30 rounded-3xl z-20 pointer-events-none" />
+                    <div ref={mapContainer} className="w-full h-full relative z-0" />
+                    <div className="absolute top-0 left-0 w-full h-12 bg-gradient-to-b from-white/40 to-transparent z-20 pointer-events-none backdrop-blur-[2px]" />
                     <motion.div
-                        className="absolute bottom-4 left-4 flex items-center gap-2 text-xs text-white/60 bg-black/50 backdrop-blur-sm px-2 py-1 rounded-md border border-white/10"
+                        className="absolute bottom-5 left-5 flex items-center gap-2 text-xs font-medium text-slate-700 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-sm z-20 border border-slate-100"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 1 }}
                     >
                         <div className="flex items-center">
                             <motion.div
-                                className="h-1.5 w-1.5 rounded-full bg-primary-500"
+                                className="h-2 w-2 rounded-full bg-primary-500"
                                 animate={{ scale: [1, 1.5, 1], opacity: [0.5, 1, 0.5] }}
                                 transition={{ duration: 2, repeat: Infinity }}
                             />
                         </div>
                         <span>
-                            {results.length ? `${results.length} locations` : "Map Ready"}
+                            {results.length ? `${results.length} locations found` : "Map Ready"}
                         </span>
                     </motion.div>
                 </div>
@@ -243,21 +247,23 @@ export default function Home() {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
-                className="w-full md:w-1/2 p-4 overflow-hidden flex flex-col"
+                className="w-full md:w-1/2 p-4 md:p-6 overflow-hidden flex flex-col z-10"
             >
-                <div className="bg-black/30 backdrop-blur-md rounded-xl border border-white/5 p-4 md:p-6 shadow-xl h-full overflow-hidden flex flex-col">
+                <div className="bg-white/80 backdrop-blur-md rounded-3xl p-6 shadow-xl h-full overflow-hidden flex flex-col border border-slate-100">
                     <motion.div
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.4, delay: 0.3 }}
                         className="mb-6"
                     >
-                        <h1 className="text-xl font-bold flex items-center">
-                            <GlobeAltIcon className="h-5 w-5 mr-2 text-primary-500" />
+                        <h1 className="text-xl font-bold flex items-center text-slate-800">
+                            <span className="flex items-center justify-center h-10 w-10 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 text-white mr-3 shadow-lg shadow-primary-500/20">
+                                <GlobeAltIcon className="h-5 w-5" />
+                            </span>
                             IP Geolocation Tracker
                         </h1>
-                        <p className="text-white/50 text-sm mt-1">
-                            Track geographic locations of IP addresses using multiple APIs
+                        <p className="text-slate-500 text-sm mt-2 ml-[52px]">
+                            Find precise geographic locations for any IP address
                         </p>
                     </motion.div>
                     <motion.div
@@ -266,16 +272,16 @@ export default function Home() {
                         transition={{ duration: 0.4, delay: 0.4 }}
                         className="mb-6"
                     >
-                        <div className="flex gap-2 mb-1 items-center">
+                        <div className="flex gap-2 items-center">
                             <div className="relative flex-1">
-                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary-500 transition-colors duration-200">
+                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
                                     <MapPinIcon className="w-5 h-5" />
                                 </div>
                                 <input
-                                    className="w-full pl-10 pr-4 py-3 bg-black/60 border border-white/10 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 text-white placeholder-gray-500 transition-all"
+                                    className="w-full pl-12 pr-4 h-12 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-500/10 text-slate-800 placeholder-slate-400 transition-all shadow-sm"
                                     value={ip}
                                     onChange={(e) => setIp(e.target.value)}
-                                    placeholder="IP Address"
+                                    placeholder="Enter IP Address"
                                 />
                             </div>
                             <motion.button
@@ -283,37 +289,18 @@ export default function Home() {
                                 whileTap={{ scale: 0.98 }}
                                 disabled={loading}
                                 onClick={handleFindLocation}
-                                className="relative overflow-hidden py-3 px-4 bg-primary-500 text-white font-medium rounded-lg disabled:opacity-70 group"
+                                className="relative overflow-hidden h-12 px-5 bg-primary-500 text-white font-medium rounded-xl disabled:opacity-70 group shadow-lg shadow-primary-500/20"
                             >
                                 <span className="relative z-10 flex items-center">
                                     {loading ? (
                                         <>
-                                            <svg
-                                                className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <circle
-                                                    className="opacity-25"
-                                                    cx="12"
-                                                    cy="12"
-                                                    r="10"
-                                                    stroke="currentColor"
-                                                    strokeWidth="4"
-                                                />
-                                                <path
-                                                    className="opacity-75"
-                                                    fill="currentColor"
-                                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                                />
-                                            </svg>
-                                            Processing...
+                                            <ArrowPathIcon className="animate-spin mr-2 h-4 w-4" />
+                                            Searching...
                                         </>
                                     ) : (
                                         <>
-                                            <MagnifyingGlassIcon className="h-4 w-4 mr-1" />
-                                            Find Location
+                                            <MagnifyingGlassIcon className="h-4 w-4 mr-2" />
+                                            Locate
                                         </>
                                     )}
                                 </span>
@@ -329,119 +316,136 @@ export default function Home() {
                             <motion.div
                                 initial={{ opacity: 0, height: 0 }}
                                 animate={{ opacity: 1, height: "auto" }}
-                                className="mt-3 p-3 bg-red-500/10 border border-red-500/20 rounded-lg"
+                                className="mt-3 p-3 bg-red-50 border border-red-100 rounded-xl"
                             >
-                                <p className="text-center text-sm text-red-500">{error}</p>
+                                <p className="text-center text-sm text-red-500 font-medium">{error}</p>
                             </motion.div>
                         )}
                     </motion.div>
-                    <div className="flex-1 overflow-auto scrollbar-thin scrollbar-thumb-primary-500/20 scrollbar-track-white/5 pr-2">
+                    <div className="flex-1 overflow-auto scrollbar-thin scrollbar-thumb-primary-500/10 scrollbar-track-slate-100 pr-2">
                         {!results.length && !loading && !error ? (
                             <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
-                                className="h-full flex flex-col items-center justify-center text-white/30 p-8"
+                                className="h-full flex flex-col items-center justify-center text-slate-500 p-8"
                             >
-                                <GlobeAltIcon className="h-16 w-16 mb-4 text-primary-500/20" />
-                                <p className="text-center">
-                                    Enter an IP address and click "Find Location" to see
-                                    geolocation results
+                                <div className="relative w-20 h-20 mb-6">
+                                    <div className="absolute inset-0 rounded-full bg-slate-50 animate-pulse"></div>
+                                    <div className="absolute inset-2 rounded-full bg-gradient-to-br from-primary-50/20 to-primary-100/80 border border-primary-200/50"></div>
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <GlobeAltIcon className="h-10 w-10 text-primary-500" />
+                                    </div>
+                                </div>
+                                <p className="text-center text-sm max-w-xs font-medium">
+                                    Enter an IP address and click "Locate" to find its geographic location
                                 </p>
                             </motion.div>
                         ) : (
                             <div className="space-y-4">
-                                {results.map((r, i) => {
-                                    const { city, country, region } = getLocationInfo(r.data)
-                                    const isExpanded = expandedCard === i
+                                <AnimatePresence>
+                                    {results.map((r, i) => {
+                                        const { city, country, region } = getLocationInfo(r.data)
+                                        const isp = getISP(r.data)
+                                        const isExpanded = expandedCard === i
 
-                                    return (
-                                        <motion.div
-                                            key={i}
-                                            initial={{ opacity: 0, y: 20 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            transition={{ duration: 0.4, delay: i * 0.1 }}
-                                            className="bg-gradient-to-br from-black to-black/60 backdrop-blur-md rounded-lg border border-white/5 overflow-hidden shadow-lg"
-                                        >
-                                            <div
-                                                onClick={() => toggleCard(i)}
-                                                className="relative cursor-pointer transition-all duration-300"
+                                        return (
+                                            <motion.div
+                                                key={i}
+                                                initial={{ opacity: 0, y: 20 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ duration: 0.4, delay: i * 0.1 }}
+                                                className="bg-white rounded-2xl border border-slate-200/70 overflow-hidden shadow-sm hover:shadow-md transition-shadow"
                                             >
-                                                {/* Hover effect line */}
-                                                <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
-                                                    <div className={`absolute top-0 left-0 w-1 h-full bg-primary-500 transition-all duration-300 ${isExpanded ? 'opacity-100' : 'opacity-0'}`}></div>
-                                                </div>
-
-                                                <div className="flex items-center p-4">
-                                                    <div className="h-10 w-10 rounded-full bg-primary-500/10 flex items-center justify-center mr-4 border border-primary-500/20">
-                                                        <ServerIcon className="h-5 w-5 text-primary-500" />
+                                                <div
+                                                    onClick={() => toggleCard(i)}
+                                                    className="relative cursor-pointer transition-all duration-300 hover:bg-slate-50"
+                                                >
+                                                    {/* Colored edge indicator */}
+                                                    <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
+                                                        <div className={`absolute top-0 left-0 w-[3px] h-full bg-gradient-to-b from-primary-400 to-primary-600 transition-all duration-300 ${isExpanded ? 'opacity-100' : 'opacity-0'}`}></div>
                                                     </div>
 
-                                                    <div className="flex-1">
-                                                        <div className="flex items-center">
-                                                            <h3 className="font-bold text-white text-lg">{r.api}</h3>
-                                                            <div className="flex items-center ml-2 px-2 py-0.5 bg-black/40 border border-primary-500/20 rounded-full">
-                                                                <ClockIcon className="w-3 h-3 text-primary-500 mr-1" />
-                                                                <span className="text-xs text-primary-500">{r.time}ms</span>
-                                                            </div>
+                                                    <div className="flex items-center p-4">
+                                                        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center mr-4 border border-slate-200/50 shadow-sm">
+                                                            <ServerIcon className="h-6 w-6 text-primary-500" />
                                                         </div>
 
-                                                        <div className="text-sm text-white/60 mt-1">
-                                                            {city && country ? (
-                                                                <div className="flex items-center">
-                                                                    <MapPinIcon className="w-3 h-3 mr-1" />
-                                                                    <span>{[city, region, country].filter(Boolean).join(", ")}</span>
+                                                        <div className="flex-1 min-w-0">
+                                                            <div className="flex items-center flex-wrap gap-2">
+                                                                <h3 className="font-semibold text-slate-800 text-base">{r.api}</h3>
+                                                                <div className="flex items-center px-2.5 py-1 bg-primary-50 text-primary-600 text-xs rounded-full font-medium">
+                                                                    <ClockIcon className="w-3 h-3 mr-1" />
+                                                                    {r.time}ms
                                                                 </div>
-                                                            ) : (
-                                                                <div className="text-white/40">Data available</div>
+                                                            </div>
+
+                                                            <div className="text-sm text-slate-600 mt-1 truncate">
+                                                                {city && country ? (
+                                                                    <div className="flex items-center">
+                                                                        <MapPinIcon className="w-3.5 h-3.5 mr-1 flex-shrink-0 text-slate-400" />
+                                                                        <span className="truncate">{[city, region, country].filter(Boolean).join(", ")}</span>
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="text-slate-400 text-xs">Location data available</div>
+                                                                )}
+                                                            </div>
+
+                                                            {isp && (
+                                                                <div className="text-xs text-slate-500 mt-1 truncate">
+                                                                    <span className="text-slate-400">ISP:</span> {isp}
+                                                                </div>
                                                             )}
                                                         </div>
+
+                                                        <div className="flex items-center">
+                                                            <motion.button
+                                                                whileHover={{ scale: 1.05 }}
+                                                                whileTap={{ scale: 0.95 }}
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation()
+                                                                    goToLocation(r.lat, r.lng)
+                                                                }}
+                                                                className="mr-3 flex items-center justify-center w-9 h-9 rounded-lg bg-slate-50 hover:bg-primary-50 border border-slate-200 hover:border-primary-200 transition-colors shadow-sm"
+                                                                title="Center on map"
+                                                            >
+                                                                <MapPinIcon className="h-4 w-4 text-primary-500" />
+                                                            </motion.button>
+
+                                                            <motion.div
+                                                                animate={{ rotate: isExpanded ? 90 : 0 }}
+                                                                transition={{ duration: 0.3 }}
+                                                                className="w-6 h-6 flex items-center justify-center text-slate-400"
+                                                            >
+                                                                <ChevronRightIcon className="h-5 w-5" />
+                                                            </motion.div>
+                                                        </div>
                                                     </div>
+                                                </div>
 
-                                                    <div className="flex items-center">
-                                                        <motion.button
-                                                            whileHover={{ scale: 1.05 }}
-                                                            whileTap={{ scale: 0.95 }}
-                                                            onClick={(e) => {
-                                                                e.stopPropagation()
-                                                                goToLocation(r.lat, r.lng)
-                                                            }}
-                                                            className="mr-2 flex items-center justify-center w-8 h-8 rounded-full bg-black/40 hover:bg-primary-500/10 border border-white/10 hover:border-primary-500/20 transition-colors"
-                                                        >
-                                                            <MapPinIcon className="h-4 w-4 text-primary-500" />
-                                                        </motion.button>
-
+                                                {/* Expandable content */}
+                                                <AnimatePresence>
+                                                    {isExpanded && (
                                                         <motion.div
-                                                            animate={{ rotate: isExpanded ? 90 : 0 }}
+                                                            initial={{ height: 0, opacity: 0 }}
+                                                            animate={{ height: 'auto', opacity: 1 }}
+                                                            exit={{ height: 0, opacity: 0 }}
                                                             transition={{ duration: 0.3 }}
-                                                            className="w-6 h-6 flex items-center justify-center"
+                                                            className="overflow-hidden"
                                                         >
-                                                            <ChevronRightIcon className="h-5 w-5 text-white/40" />
+                                                            <div className="p-4 pt-0">
+                                                                <div className="h-px w-full bg-slate-100 mb-4" />
+
+                                                                <pre className="text-xs text-slate-700 overflow-x-auto font-mono p-4 rounded-lg bg-slate-50 border border-slate-200/70">
+                                                                    {JSON.stringify(r.data, null, 2)}
+                                                                </pre>
+                                                            </div>
                                                         </motion.div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* Expandable content */}
-                                            <motion.div
-                                                initial={{ height: 0, opacity: 0 }}
-                                                animate={{
-                                                    height: isExpanded ? 'auto' : 0,
-                                                    opacity: isExpanded ? 1 : 0
-                                                }}
-                                                transition={{ duration: 0.3 }}
-                                                className="overflow-hidden"
-                                            >
-                                                <div className="p-4 pt-0">
-                                                    <div className="h-px w-full bg-gradient-to-r from-primary-500/20 via-white/5 to-transparent mb-4" />
-
-                                                    <pre className="text-xs text-white/70 overflow-x-auto font-mono p-3 rounded bg-black/40 border border-white/5">
-                                                        {JSON.stringify(r.data, null, 2)}
-                                                    </pre>
-                                                </div>
+                                                    )}
+                                                </AnimatePresence>
                                             </motion.div>
-                                        </motion.div>
-                                    )
-                                })}
+                                        )
+                                    })}
+                                </AnimatePresence>
                             </div>
                         )}
                     </div>
@@ -449,17 +453,9 @@ export default function Home() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.6 }}
-                        className="mt-4 pt-3 border-t border-white/5 flex justify-between items-center text-xs text-white/40"
+                        className="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs text-slate-500"
                     >
-                        <div>IP Geolocation Tracker</div>
-                        <div className="flex items-center">
-                            <motion.div
-                                className="h-1.5 w-1.5 rounded-full bg-primary-500 mr-1"
-                                animate={{ scale: [1, 1.5, 1], opacity: [0.5, 1, 0.5] }}
-                                transition={{ duration: 2, repeat: Infinity }}
-                            />
-                            Live
-                        </div>
+                        <div className="font-medium">IP Geolocation Tracker</div>
                     </motion.div>
                 </div>
             </motion.div>
@@ -468,54 +464,53 @@ export default function Home() {
           z-index: 1;
         }
         .maplibregl-popup-content {
-          background: rgba(0, 0, 0, 0.8);
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 8px;
-          padding: 8px 10px;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+          background: rgba(255, 255, 255, 0.97);
+          backdrop-filter: blur(8px);
+          border: 1px solid rgba(229, 231, 235, 0.5);
+          border-radius: 16px;
+          padding: 12px 14px;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
         }
         .maplibregl-popup-tip {
-          border-top-color: rgba(0, 0, 0, 0.8) !important;
-          border-bottom-color: rgba(0, 0, 0, 0.8) !important;
+          border-top-color: rgba(255, 255, 255, 0.97) !important;
+          border-bottom-color: rgba(255, 255, 255, 0.97) !important;
         }
         .maplibregl-popup-close-button {
-          color: rgba(255, 255, 255, 0.5);
+          color: rgba(107, 114, 128, 0.7);
           font-size: 20px;
           padding: 0 6px;
         }
         .maplibregl-popup-close-button:hover {
-          color: rgba(255, 255, 255, 0.8);
+          color: rgba(107, 114, 128, 1);
           background: transparent;
         }
         .maplibregl-ctrl-group {
-          background: rgba(0, 0, 0, 0.6);
-          backdrop-filter: blur(5px);
-          border: 1px solid rgba(255, 255, 255, 0.1) !important;
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(8px);
+          border-radius: 12px !important;
+          border: 1px solid rgba(229, 231, 235, 0.5) !important;
           overflow: hidden;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
         }
         .maplibregl-ctrl button {
           background-color: transparent !important;
         }
         .maplibregl-ctrl button:hover {
-          background-color: rgba(255, 255, 255, 0.1) !important;
-        }
-        .maplibregl-ctrl button span {
-          filter: invert(1) opacity(0.7);
+          background-color: rgba(209, 213, 219, 0.2) !important;
         }
         .scrollbar-thin::-webkit-scrollbar {
-          width: 6px;
+          width: 4px;
         }
         .scrollbar-thin::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.05);
-          border-radius: 10px;
+          background: rgba(241, 245, 249, 0.5);
+          border-radius: 8px;
         }
         .scrollbar-thin::-webkit-scrollbar-thumb {
-          background: rgba(20, 184, 166, 0.2);
-          border-radius: 10px;
+          background: rgba(20, 184, 166, 0.1);
+          border-radius: 8px;
         }
         .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-          background: rgba(20, 184, 166, 0.4);
+          background: rgba(20, 184, 166, 0.2);
         }
       `}</style>
         </div>
