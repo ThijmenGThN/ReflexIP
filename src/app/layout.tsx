@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description: "Quickly compare IP lookup results across top IP databases. Discover accuracy, consistency, and insights with Nantric's streamlined IP comparison tool.",
   openGraph: {
     type: "website",
-    url: "http://reflex.nantric.net/",
+    url: "http://ip.nantric.com/",
     title: "Nantric | Compare IP Databases with Ease",
     description: "Quickly compare IP lookup results across top IP databases. Discover accuracy, consistency, and insights with Nantric's streamlined IP comparison tool.",
     images: [
