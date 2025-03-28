@@ -1,0 +1,29 @@
+.__json-pretty__ {
+    line-height: 1.3;
+    color: #141827;
+    background: #f8fafc;
+    overflow: auto;
+}
+
+.__json-pretty__ .__json-key__ {
+    color: #1960E7;
+}
+
+.__json-pretty__ .__json-value__ {
+    color: #141827
+}
+
+.__json-pretty__ .__json-string__ {
+    color: #141827
+}
+
+.__json-pretty__ .__json-boolean__ {
+    color: #141827
+}
+
+.__json-pretty-error__ {
+    line-height: 1.3;
+    color: #c52a2a;
+    background: #1e1e1e;
+    overflow: auto
+}

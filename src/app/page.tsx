@@ -1,8 +1,10 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import JSONPretty from "react-json-pretty"
 import maplibregl from "maplibre-gl"
 import "maplibre-gl/dist/maplibre-gl.css"
+import "@/styles/json.css"
 import axios from "axios"
 import { motion, AnimatePresence } from "framer-motion"
 import {
@@ -25,7 +27,6 @@ interface ResultItem {
 }
 
 import LogoRect from "@/assets/rectangle.svg"
-import LogoSquare from "@/assets/square.svg"
 
 export default function Home() {
   const mapContainer = useRef<HTMLDivElement>(null)
@@ -39,7 +40,8 @@ export default function Home() {
   useEffect(() => {
     const m = new maplibregl.Map({
       container: mapContainer.current as HTMLElement,
-      style: "https://api.maptiler.com/maps/0195d9ce-f3be-74f2-9f4e-0c55be14716f/style.json?key=gB6P57S1Ofik49XFcLSa",
+      style:
+        "https://api.maptiler.com/maps/0195d9ce-f3be-74f2-9f4e-0c55be14716f/style.json?key=gB6P57S1Ofik49XFcLSa",
       center: [0, 45],
       zoom: 3,
       attributionControl: false
@@ -62,15 +64,15 @@ export default function Home() {
     })
     setMap(m)
 
-      ; (async () => {
-        try {
-          const res = await fetch("https://api.ipify.org?format=json")
-          const data = await res.json()
-          setIp(data.ip)
-        } catch {
-          setError("Could not detect your IP address")
-        }
-      })()
+    ;(async () => {
+      try {
+        const res = await fetch("https://api.ipify.org?format=json")
+        const data = await res.json()
+        setIp(data.ip)
+      } catch {
+        setError("Could not detect your IP address")
+      }
+    })()
     return () => m.remove()
   }, [])
 
@@ -80,14 +82,27 @@ export default function Home() {
     }
   }
 
-  function toggleCard(index: number) {
+  function toggleCard(index: number, lat: number, lng: number) {
+    goToLocation(lat, lng)
     setExpandedCard(expandedCard === index ? null : index)
   }
 
   function getLocationInfo(data: any) {
-    const city = data.city || data.location?.city || data.data?.location?.city || ""
-    const country = data.country || data.location?.country || data.data?.location?.country || ""
-    const region = data.region || data.location?.region || data.data?.location?.region || ""
+    let city = data.city || data.location?.city || data.data?.location?.city || ""
+    if (city && typeof city === "object") {
+      city = ""
+    }
+
+    let country = data.country || data.location?.country || data.data?.location?.country || ""
+    if (country && typeof country === "object") {
+      country = ""
+    }
+
+    let region = data.region || data.location?.region || data.data?.location?.region || ""
+    if (region && typeof region === "object") {
+      region = ""
+    }
+
     return { city, country, region }
   }
 
@@ -145,23 +160,23 @@ export default function Home() {
             const el = document.createElement("div")
             el.className = "custom-marker"
             el.innerHTML = `
-              <div class="flex flex-col items-center">
-                <div class="w-3 h-3 bg-primary-500 rounded-full animate-pulse"></div>
-                <div class="w-0.5 h-6 bg-primary-500/70 -mt-1"></div>
-                <div class="w-4 h-4 rounded-full bg-primary-500 flex items-center justify-center ring-4 ring-primary-500/30 animate-ping absolute opacity-75"></div>
-                <div class="w-3 h-3 rounded-full bg-primary-500 absolute"></div>
+              <div class="relative -translate-x-1/2 -translate-y-full">
+                <div class="absolute -bottom-1 left-1/2 w-3.5 h-0.5 bg-black/20 rounded-full -translate-x-1/2 blur-sm"></div>
+                <div class="relative origin-bottom">
+                  <div class="relative w-5 h-5 bg-primary-500 rounded-tl-full rounded-tr-full rounded-br-full -rotate-45 ring-2 ring-white/80">
+                    <div class="absolute w-2 h-2 bg-white rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
+                  </div>
+                  <div class="absolute w-0.5 h-2 bg-white/80 top-3.5 left-[9px] rotate-45"></div>
+                </div>
               </div>
             `
-            new maplibregl.Marker(el)
+            new maplibregl.Marker({ element: el })
               .setLngLat([+lng, +lat])
               .setPopup(
-                new maplibregl.Popup({ offset: 25, className: "custom-popup" })
-                  .setHTML(`
+                new maplibregl.Popup({ offset: 25, className: "custom-popup" }).setHTML(`
                     <div class="text-slate-800">
                       <div class="font-medium text-primary-600">${api}</div>
-                      <div class="text-xs text-slate-500 mt-1">Response: ${(
-                      tEnd - tStart
-                    ).toFixed(0)}ms</div>
+                      <div class="text-xs text-slate-500 mt-1">Response: ${(tEnd - tStart).toFixed(0)}ms</div>
                     </div>
                   `)
               )
@@ -226,8 +241,8 @@ export default function Home() {
         <div className="absolute inset-4 md:inset-6 rounded-3xl overflow-hidden shadow-xl">
           <div className="absolute inset-0 bg-gradient-to-tr from-slate-50 to-white/5 z-10 pointer-events-none opacity-[0.02]" />
           <div className="absolute inset-0 border border-slate-200/30 rounded-3xl z-20 pointer-events-none" />
-          <div className="absolute z-50 top-5 left-5 bg-white/90 backdrop-blur-sm px-4 py-2 border border-slate-200/30 rounded-xl pointer-events-none">
-            <Image src={LogoRect} alt="Logo" className="h-20 w-auto -my-4 mx-auto rounded-full" />
+          <div className="absolute z-50 top-5 left-5 bg-white/90 backdrop-blur-sm px-2 py-1.5 border border-slate-200/30 rounded-xl pointer-events-none">
+            <Image src={LogoRect} alt="Logo" className="h-24 w-auto -my-6 mx-auto rounded-full" />
           </div>
           <div ref={mapContainer} className="w-full h-full relative z-0" />
           <div className="absolute top-0 left-0 w-full h-12 bg-gradient-to-b from-white/40 to-transparent z-20 pointer-events-none backdrop-blur-[2px]" />
@@ -245,7 +260,7 @@ export default function Home() {
               />
             </div>
             <span>
-              {results.length ? `${results.length} locations found` : "Map Ready"}
+              {results.length ? `${results.length} locations found` : "Locations"}
             </span>
           </motion.div>
         </div>
@@ -263,15 +278,19 @@ export default function Home() {
             transition={{ duration: 0.4, delay: 0.3 }}
             className="mb-6"
           >
-            <h1 className="text-xl font-bold flex items-center text-slate-800">
-              <span className="flex items-center justify-center h-10 w-10 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 text-white mr-3 shadow-lg shadow-primary-500/20">
+            <div className="flex">
+              <div className="flex mt-1.5 mr-5 items-center justify-center h-10 w-10 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 text-white shadow-lg shadow-primary-500/20">
                 <GlobeAltIcon className="h-5 w-5" />
-              </span>
-              IP Geolocation Tracker
-            </h1>
-            <p className="text-slate-500 text-sm mt-2 ml-[52px]">
-              Find precise geographic locations for any IP address
-            </p>
+              </div>
+              <div>
+                <h1 className="text-xl font-bold flex items-center text-slate-800">
+                  IP Geolocation Tracker
+                </h1>
+                <p className="text-slate-500 text-sm">
+                  Find precise geographic locations for any IP address
+                </p>
+              </div>
+            </div>
           </motion.div>
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -364,12 +383,16 @@ export default function Home() {
                         className="bg-white rounded-2xl border border-slate-200/70 overflow-hidden shadow-sm hover:shadow-md transition-shadow"
                       >
                         <div
-                          onClick={() => toggleCard(i)}
+                          onClick={() => toggleCard(i, r.lat, r.lng)}
                           className="relative cursor-pointer transition-all duration-300 hover:bg-slate-50"
                         >
                           {/* Colored edge indicator */}
                           <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
-                            <div className={`absolute top-0 left-0 w-[3px] h-full bg-gradient-to-b from-primary-400 to-primary-600 transition-all duration-300 ${isExpanded ? 'opacity-100' : 'opacity-0'}`}></div>
+                            <div
+                              className={`absolute top-0 left-0 w-[3px] h-full bg-gradient-to-b from-primary-400 to-primary-600 transition-all duration-300 ${
+                                isExpanded ? "opacity-100" : "opacity-0"
+                              }`}
+                            ></div>
                           </div>
 
                           <div className="flex items-center p-4">
@@ -379,7 +402,9 @@ export default function Home() {
 
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center flex-wrap gap-2">
-                                <h3 className="font-semibold text-slate-800 text-base">{r.api}</h3>
+                                <h3 className="font-semibold text-slate-800 text-base">
+                                  {r.api}
+                                </h3>
                                 <div className="flex items-center px-2.5 py-1 bg-primary-50 text-primary-600 text-xs rounded-full font-medium">
                                   <ClockIcon className="w-3 h-3 mr-1" />
                                   {r.time}ms
@@ -390,10 +415,14 @@ export default function Home() {
                                 {city && country ? (
                                   <div className="flex items-center">
                                     <MapPinIcon className="w-3.5 h-3.5 mr-1 flex-shrink-0 text-slate-400" />
-                                    <span className="truncate">{[city, region, country].filter(Boolean).join(", ")}</span>
+                                    <span className="truncate">
+                                      {[city, region, country].filter(Boolean).join(", ")}
+                                    </span>
                                   </div>
                                 ) : (
-                                  <div className="text-slate-400 text-xs">Location data available</div>
+                                  <div className="text-slate-400 text-xs">
+                                    Location data available
+                                  </div>
                                 )}
                               </div>
 
@@ -434,7 +463,7 @@ export default function Home() {
                           {isExpanded && (
                             <motion.div
                               initial={{ height: 0, opacity: 0 }}
-                              animate={{ height: 'auto', opacity: 1 }}
+                              animate={{ height: "auto", opacity: 1 }}
                               exit={{ height: 0, opacity: 0 }}
                               transition={{ duration: 0.3 }}
                               className="overflow-hidden"
@@ -442,9 +471,9 @@ export default function Home() {
                               <div className="p-4 pt-0">
                                 <div className="h-px w-full bg-slate-100 mb-4" />
 
-                                <pre className="text-xs text-slate-700 overflow-x-auto font-mono p-4 rounded-lg bg-slate-50 border border-slate-200/70">
-                                  {JSON.stringify(r.data, null, 2)}
-                                </pre>
+                                <div className="p-4 bg-slate-50 overflow-x-auto border border-slate-200/70 rounded-lg">
+                                  <JSONPretty id="json-pretty" data={r.data}></JSONPretty>
+                                </div>
                               </div>
                             </motion.div>
                           )}

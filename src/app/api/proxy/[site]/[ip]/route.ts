@@ -1,6 +1,6 @@
+import axios from "axios"
 import { NextRequest, NextResponse } from "next/server"
 import { WebServiceClient } from "@maxmind/geoip2-node"
-import axios from "axios"
 
 export async function GET(
     _req: NextRequest,
